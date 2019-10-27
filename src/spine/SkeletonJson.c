@@ -290,8 +290,8 @@ static spAnimation* _spSkeletonJson_readAnimation (spSkeletonJson* self, Json* r
 					spFlipTimeline *timeline = spFlipTimeline_create(timelineMap->size, x);
 					timeline->boneIndex = boneIndex;
 					for (valueMap = timelineMap->child, frameIndex = 0; valueMap; valueMap = valueMap->next, ++frameIndex) {
-						spFlipTimeline_setFrame(timeline, frameIndex, Json_getFloat(valueMap, "time", 0), Json_getInt(valueMap, field, 0));
-						readCurve(valueMap, SUPER(timeline), frameIndex);
+						spFlipTimeline_setFrame(SUPER(timeline), frameIndex, Json_getFloat(valueMap, "time", 0), Json_getInt(valueMap, field, 0));
+						readCurve(valueMap, SUPER(SUPER(timeline)), frameIndex);
 					}
 					animation->timelines[animation->timelinesCount++] = SUPER_CAST(spTimeline, timeline);
 					animation->duration = MAX(animation->duration, timeline->frames[(timelineMap->size - 1) * FLIP_ENTRIES]);
@@ -589,6 +589,7 @@ spSkeletonData* spSkeletonJson_readSkeletonDataFile (spSkeletonJson* self, const
 		return 0;
 	}
 	skeletonData = spSkeletonJson_readSkeletonData(self, json);
+
 	FREE(json);
 	return skeletonData;
 }

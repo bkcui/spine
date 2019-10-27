@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-#ifdef MODULE_SPINE_ENABLED
 
 #include <core/class_db.h>
 #include <core/project_settings.h>
@@ -182,15 +181,23 @@ public:
 		res->atlas = spAtlas_createFromFile(p_atlas.utf8().get_data(), 0);
 		ERR_FAIL_COND_V(res->atlas == NULL, RES());
 
+		//print_line("loaded atlas");
+
 		if (p_path.get_extension() == "json"){
 			spSkeletonJson *json = spSkeletonJson_create(res->atlas);
 			ERR_FAIL_COND_V(json == NULL, RES());
 			json->scale = 1;
 
+			//print_line("create skeletonson");
+
 			res->data = spSkeletonJson_readSkeletonDataFile(json, p_path.utf8().get_data());
+
 			spSkeletonJson_dispose(json);
 			ERR_EXPLAIN(json->error);
 			ERR_FAIL_COND_V(res->data == NULL, RES());
+
+			
+			//print_line("read skeletonson");
 		} else {
 			spSkeletonBinary* bin  = spSkeletonBinary_create(res->atlas);
 			ERR_FAIL_COND_V(bin == NULL, RES());
@@ -203,7 +210,7 @@ public:
 
 		res->set_path(p_path);
 		float finish = OS::get_singleton()->get_ticks_msec();
-		// print_line("Spine resource (" + p_path + ") loaded in " + itos(finish-start) + " msecs");
+		//print_line("Spine resource (" + p_path + ") loaded in " + itos(finish-start) + " msecs");
 		return ref;
 	}
 
@@ -248,9 +255,4 @@ void unregister_spine_types() {
 
 }
 
-#else
-
-void register_spine_types() {}
-void unregister_spine_types() {}
-
-#endif // MODULE_SPINE_ENABLED
+ // MODULE_SPINE_ENABLED

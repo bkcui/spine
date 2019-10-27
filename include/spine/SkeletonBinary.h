@@ -36,6 +36,7 @@
 #include <spine/AttachmentLoader.h>
 #include <spine/SkeletonData.h>
 #include <spine/Atlas.h>
+#include <spine/Animation.h>
 
 #ifdef __cplusplus
 extern "C" {

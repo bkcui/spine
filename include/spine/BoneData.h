@@ -53,6 +53,7 @@ struct spBoneData {
 	float length;
 	float x, y, rotation, scaleX, scaleY, shearX, shearY;
 	int /*bool*/ flipX, flipY;
+	int /*bool*/ inheritScale, inheritRotation;
 	spTransformMode transformMode;
 
 #ifdef __cplusplus
@@ -66,6 +67,7 @@ struct spBoneData {
 		scaleX(0), scaleY(0),
 		shearX(0),	shearY(0),
 		flipX(0), flipY(0),
+		inheritScale(0), inheritRotation(0),
 		transformMode(SP_TRANSFORMMODE_NORMAL) {
 	}
 #endif

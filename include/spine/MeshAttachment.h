@@ -56,6 +56,7 @@ struct spMeshAttachment {
 
 	float* regionUVs;
 	float* uvs;
+	float *weights;
 
 	int trianglesCount;
 	unsigned short* triangles;

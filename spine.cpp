@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-#ifdef MODULE_SPINE_ENABLED
 #include "spine.h"
 #include "core/io/resource_loader.h"
 #include "scene/2d/collision_object_2d.h"
@@ -372,7 +371,12 @@ void Spine::_animation_process(float p_delta) {
 	spAnimationState_update(state, forward ? process_delta : -process_delta);
 	spAnimationState_apply(state, skeleton);
 	spSkeleton_updateWorldTransform(skeleton);
-
+	/*if (skeleton->data->animations[skeleton->data->animationsCount]->timelines[skeleton->data->animations[skeleton->data->animationsCount]->timelinesCount]->type ==
+					SP_TIMELINE_FLIPX ||
+			skeleton->data->animations[skeleton->data->animationsCount]->timelines[skeleton->data->animations[skeleton->data->animationsCount]->timelinesCount]->type ==
+					SP_TIMELINE_FLIPY)
+		spUpdateFilp(skeleton);        line that finding specific timeline type
+		*/
 	for (AttachmentNodes::Element *E = attachment_nodes.front(); E; E = E->next()) {
 
 		AttachmentNode &info = E->get();
@@ -954,8 +958,8 @@ Dictionary Spine::get_bone(const String &p_bone_name) const {
 	dict["rotationIK"] = 0; //bone->rotationIK;
 	dict["scaleX"] = bone->scaleX;
 	dict["scaleY"] = bone->scaleY;
-	dict["flipX"] = 0; //bone->flipX;
-	dict["flipY"] = 0; //bone->flipY;
+	dict["flipX"] = bone->flipX;
+	dict["flipY"] = bone->flipY;
 	dict["m00"] = bone->a; //m00;
 	dict["m01"] = bone->b; //m01;
 	dict["m10"] = bone->c; //m10;
@@ -965,8 +969,8 @@ Dictionary Spine::get_bone(const String &p_bone_name) const {
 	dict["worldRotation"] = spBone_getWorldRotationX(bone); //->worldRotation;
 	dict["worldScaleX"] = spBone_getWorldScaleX(bone); //->worldScaleX;
 	dict["worldScaleY"] = spBone_getWorldScaleY(bone); //->worldScaleY;
-	dict["worldFlipX"] = 0; //bone->worldFlipX;
-	dict["worldFlipY"] = 0; //bone->worldFlipY;
+	dict["worldFlipX"] = bone->aflipX;
+	dict["worldFlipY"] = bone->aflipY;
 
 	return dict;
 }
@@ -1372,5 +1376,4 @@ Spine::~Spine() {
 	// cleanup
 	_spine_dispose();
 }
-
-#endif // MODULE_SPINE_ENABLED
+// MODULE_SPINE_ENABLED

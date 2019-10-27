@@ -1220,6 +1220,9 @@ void spIkConstraintTimeline_setFrame (spIkConstraintTimeline* self, int frameInd
 }
 
 /**/
+/*  FlipTimeline from runtime 2.1.25. This add old property that is not support by runtime 2.5
+    This may have some problem when initializing animation.
+*/
 
 void _spFlipTimeline_apply(const spTimeline *timeline, spSkeleton *skeleton, float lastTime, float time,
 		spEvent **firedEvents, int *eventsCount, float alpha, spMixPose pose, spMixDirection direction) {
@@ -1235,7 +1238,7 @@ void _spFlipTimeline_apply(const spTimeline *timeline, spSkeleton *skeleton, flo
 
 		if (lastTime > time) _spFlipTimeline_apply(timeline, skeleton, lastTime, (float)INT_MAX, firedEvents, eventsCount, alpha, pose, direction);
 		return;
-	} else if (lastTime > time) /**/
+	} else if (lastTime > time) 
 		lastTime = -1;
 
 	frameIndex = (time >= self->frames[self->framesCount - 2] ? self->framesCount : binarySearch(self->frames, self->framesCount, time, 2)) - 2;
@@ -1252,24 +1255,36 @@ void _spFlipTimeline_apply(const spTimeline *timeline, spSkeleton *skeleton, flo
 	UNUSED(eventsCount);
 }
 
-void _spFlipTimeline_dispose(spTimeline *timeline) {
-	spFlipTimeline *self = SUB_CAST(spFlipTimeline, timeline);
-	_spTimeline_deinit(SUPER(self));
+int _spFlipTimeline_getPropertyId(const spTimeline *timeline) {
+	return ((SUB_CAST(spFlipTimeline, timeline)->x ? SP_TIMELINE_FLIPX : SP_TIMELINE_FLIPY) << 24) + SUB_CAST(spFlipTimeline, timeline)->boneIndex;
+}
+
+void _spFlipTimeline_dispose (spTimeline* timeline) {
+	struct spFlipTimeline* self = SUB_CAST(struct spFlipTimeline, timeline);
+	_spCurveTimeline_deinit(SUPER(self));
 	FREE(self->frames);
 	FREE(self);
 }
 
-int _spFTimeline_getPropertyId(const spTimeline *timeline) {
-	return ((SUB_CAST(spFlipTimeline, timeline)->x ? SP_TIMELINE_FLIPX : SP_TIMELINE_FLIPY) << 24) + SUB_CAST(spFlipTimeline, timeline)->boneIndex;
+/* Flip timeline. adding bool x value spCurveTimeline. **/
+struct spFlipTimeline* _spFlipTimeline_create (int framesCount, spTimelineType type, int frameSize, /**/
+		void (*apply) (const spTimeline* self, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
+				int* eventsCount, float alpha, spMixPose pose, spMixDirection direction),
+		int (*getPropertyId) (const spTimeline* self)) {
+	struct spFlipTimeline* self = NEW(struct spFlipTimeline);
+//	spFlipTimeline* self = NEW(spFlipTimeline);
+
+	_spCurveTimeline_init(SUPER(self), type, framesCount, _spFlipTimeline_dispose, apply, getPropertyId);
+//	_spTimeline_init(SUPER(self), type, _spFlipTimeline_dispose, _spFlipTimeline_apply, getPropertyId);
+	CONST_CAST(int, self->x) = type==SP_TIMELINE_FLIPX ? 1 : 0;
+	CONST_CAST(int, self->framesCount) = framesCount * frameSize;
+	CONST_CAST(float*, self->frames) = CALLOC(float, self->framesCount);
+
+	return self;
 }
 
-spFlipTimeline *spFlipTimeline_create(int framesCount, int /*bool*/ x) {
-	spFlipTimeline *self = NEW(spFlipTimeline);
-	_spTimeline_init(SUPER(self), (x ? SP_TIMELINE_FLIPX : SP_TIMELINE_FLIPY), _spFlipTimeline_dispose, _spFlipTimeline_apply, _spFTimeline_getPropertyId);
-	CONST_CAST(int, self->x) = x;
-	CONST_CAST(int, self->framesCount) = framesCount << 1;
-	CONST_CAST(float *, self->frames) = CALLOC(float, self->framesCount);
-	return self;
+spFlipTimeline* spFlipTimeline_create (int framesCount, int /*bool*/ c) {
+	return (spFlipTimeline* ) _spFlipTimeline_create(framesCount, c ? SP_TIMELINE_FLIPX : SP_TIMELINE_FLIPY, FLIP_ENTRIES, _spFlipTimeline_apply, _spFlipTimeline_getPropertyId);
 }
 
 void spFlipTimeline_setFrame(spFlipTimeline *self, int frameIndex, float time, int /*bool*/ flip) {
@@ -1279,6 +1294,7 @@ void spFlipTimeline_setFrame(spFlipTimeline *self, int frameIndex, float time, i
 }
 
 /**/
+
 static const int TRANSFORMCONSTRAINT_PREV_TIME = -5;
 static const int TRANSFORMCONSTRAINT_PREV_ROTATE = -4;
 static const int TRANSFORMCONSTRAINT_PREV_TRANSLATE = -3;

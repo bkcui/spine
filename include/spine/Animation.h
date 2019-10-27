@@ -89,20 +89,19 @@ typedef spAnimation Animation;
 /**/
 
 typedef enum {
+	SP_TIMELINE_SCALE,
 	SP_TIMELINE_ROTATE,
 	SP_TIMELINE_TRANSLATE,
-	SP_TIMELINE_SCALE,
-	SP_TIMELINE_SHEAR,
 	SP_TIMELINE_ATTACHMENT,
 	SP_TIMELINE_COLOR,
+	SP_TIMELINE_FLIPX,
+	SP_TIMELINE_FLIPY,
+	SP_TIMELINE_SHEAR,
 	SP_TIMELINE_DEFORM,
 	SP_TIMELINE_EVENT,
 	SP_TIMELINE_DRAWORDER,
-	SP_TIMELINE_FFD,
 	SP_TIMELINE_IKCONSTRAINT,
 	SP_TIMELINE_TRANSFORMCONSTRAINT,
-	SP_TIMELINE_FLIPX,
-	SP_TIMELINE_FLIPY,
 	SP_TIMELINE_PATHCONSTRAINTPOSITION,
 	SP_TIMELINE_PATHCONSTRAINTSPACING,
 	SP_TIMELINE_PATHCONSTRAINTMIX,
@@ -131,6 +130,8 @@ typedef spTimeline Timeline;
 #define TIMELINE_SCALE SP_TIMELINE_SCALE
 #define TIMELINE_ROTATE SP_TIMELINE_ROTATE
 #define TIMELINE_TRANSLATE SP_TIMELINE_TRANSLATE
+#define TIMELINE_FLIPX SP_TIMELINE_FLIPX
+#define TIMELINE_FLIPY SP_TIMELINE_FLIPY
 #define TIMELINE_COLOR SP_TIMELINE_COLOR
 #define TIMELINE_ATTACHMENT SP_TIMELINE_ATTACHMENT
 #define TIMELINE_EVENT SP_TIMELINE_EVENT
@@ -465,26 +466,26 @@ typedef spIkConstraintTimeline IkConstraintTimeline;
 /**/
 
 typedef struct spFlipTimeline {
-	spTimeline super;
+	spCurveTimeline super;
+	int const /*bool*/ x;
 	int const framesCount;
-	float *const frames; /* time, flip, ... */
+	float* const frames; /* time, angle, ... for rotate. time, x, y, ... for translate and scale. */
 	int boneIndex;
-	int const x;
 
 #ifdef __cplusplus
 	spFlipTimeline() :
-			super(),
-			framesCount(0),
-			frames(0),
-			boneIndex(0),
-			x(0) {
+		super(),
+		x(0),
+		framesCount(0),
+		frames(0),
+		boneIndex(0) {
 	}
 #endif
 } spFlipTimeline;
 
 static const int FLIP_ENTRIES = 2;
 
-SP_API spFlipTimeline *spFlipTimeline_create(int framesCount, int /*bool*/ x);
+SP_API spFlipTimeline* spFlipTimeline_create(int framesCount, int /*bool*/ c);
 
 SP_API void spFlipTimeline_setFrame(spFlipTimeline *self, int frameIndex, float time, int /*bool*/ flip);
 
