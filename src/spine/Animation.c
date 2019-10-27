@@ -1233,8 +1233,8 @@ void _spFlipTimeline_apply(const spTimeline *timeline, spSkeleton *skeleton, flo
 
 	if (time < self->frames[0]) {
 
-		bone->flipX = bone->data->flipX;
-		bone->flipY = bone->data->flipY;
+		bone->flipX = bone->data->flipX != bone->flipX;
+		bone->flipY = bone->data->flipY != bone->flipY;
 
 		if (lastTime > time) _spFlipTimeline_apply(timeline, skeleton, lastTime, (float)INT_MAX, firedEvents, eventsCount, alpha, pose, direction);
 		return;
@@ -1242,15 +1242,13 @@ void _spFlipTimeline_apply(const spTimeline *timeline, spSkeleton *skeleton, flo
 		lastTime = -1;
 
 	frameIndex = (time >= self->frames[self->framesCount - 2] ? self->framesCount : binarySearch(self->frames, self->framesCount, time, 2)) - 2;
-	if (self->frames[frameIndex] < lastTime) return;
 
 	if (self->x) 
 		bone->flipX = (int)self->frames[frameIndex + 1];
 	else 
 		bone->flipY = (int)self->frames[frameIndex + 1];
 
-		/* Interpolate between the previous frame and the current frame. ************** Maybe need to be added*********************/
-
+	
 	UNUSED(firedEvents);
 	UNUSED(eventsCount);
 }

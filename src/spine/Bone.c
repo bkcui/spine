@@ -212,8 +212,8 @@ void spBone_setToSetupPose (spBone* self) {
 	self->scaleY = self->data->scaleY;
 	self->shearX = self->data->shearX;
 	self->shearY = self->data->shearY;
-	self->flipX = self->data->flipX;
-	self->flipY = self->data->flipY;
+	//self->flipX = self->data->flipX != self->flipX;
+	//self->flipY = self->data->flipY != self->flipY;
 	self->aflipX=0;
 	self->aflipY=0;
 }

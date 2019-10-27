@@ -398,8 +398,8 @@ void spSkeleton_updateWorldTransform (const spSkeleton* self) {
 		CONST_CAST(float, bone->ascaleY) = bone->scaleY;
 		CONST_CAST(float, bone->ashearX) = bone->shearX;
 		CONST_CAST(float, bone->ashearY) = bone->shearY;
-		CONST_CAST(int, bone->aflipX) = 0;
-		CONST_CAST(int, bone->aflipY) = 0;
+		//CONST_CAST(int, bone->aflipX) = bone->flipX;
+		//CONST_CAST(int, bone->aflipY) = bone->flipY;
 		CONST_CAST(int, bone->appliedValid) = 1;
 	}
 
