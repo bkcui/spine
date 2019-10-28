@@ -1,5 +1,5 @@
 This module is backport version branch forked from (https://github.com/GodotExplorer/spine).
-The master branch tagged with 2.1.25's current Godot version is 3.2 and I changed spine runtime that can run 2.1.25 version.
+The master branch's current Godot version is 3.2 and I changed spine runtime that can run 2.1.25 version.
 Some property of current version is depreciated, it may not fully compatible with current version.
 So use this module only spine 2.1.25
 
