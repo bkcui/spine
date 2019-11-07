@@ -506,11 +506,11 @@ static spAnimation *_spSkeletonBinary_readAnimation(spSkeletonBinary *self, cons
 		for (ii = 0, nn = readVarint(input, 1); ii < nn; ++ii) {
 			int slotIndex = readVarint(input, 1);
 			for (iii = 0, nnn = readVarint(input, 1); iii < nnn; ++iii) {
+				const char *attachmentName = readString(input);
+				int frameCount = readVarint(input, 1);
 				float *tempDeform;
 				spDeformTimeline *timeline;
 				int weighted, deformLength;
-				const char *attachmentName = readString(input);
-				int frameCount;
 
 				spVertexAttachment *attachment = SUB_CAST(spVertexAttachment,
 						spSkin_getAttachment(skin, slotIndex, attachmentName));
@@ -528,7 +528,6 @@ static spAnimation *_spSkeletonBinary_readAnimation(spSkeletonBinary *self, cons
 				deformLength = weighted ? attachment->verticesCount / 3 * 2 : attachment->verticesCount;
 				tempDeform = MALLOC(float, deformLength);
 
-				frameCount = readVarint(input, 1);
 				timeline = spDeformTimeline_create(frameCount, deformLength);
 				timeline->slotIndex = slotIndex;
 				timeline->attachment = SUPER(attachment);
@@ -770,11 +769,15 @@ spAttachment *spSkeletonBinary_readAttachment(spSkeletonBinary *self, _dataInput
 			mesh = SUB_CAST(spMeshAttachment, attachment);
 			mesh->path = path;
 			int uvs_size = readVarint(input, 1);
-			mesh->uvs = _readFloatArray(input, 1, uvs_size);
+			mesh->regionUVs = _readFloatArray(input, 1, uvs_size);
 			int trigangles_size = readVarint(input, 1);	
 			mesh->triangles = (unsigned short *)_readShortArray(input, &mesh->trianglesCount, trigangles_size);
 			int vertices_size = readVarint(input, 1);
 			SUPER(mesh)->vertices = _readFloatArray(input, self->scale, vertices_size);
+			mesh->trianglesCount = trigangles_size;
+			SUPER(mesh)->verticesCount = vertices_size;
+			SUPER(mesh)->worldVerticesLength = vertices_size;
+			mesh->uvs = MALLOC(float, uvs_size);
 			spMeshAttachment_updateUVs(mesh);
 			readColor(input, &mesh->color.r, &mesh->color.g, &mesh->color.b, &mesh->color.a);
 			mesh->hullLength = readVarint(input, 1) << 1;

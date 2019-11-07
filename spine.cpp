@@ -126,7 +126,6 @@ static Ref<Texture> spine_get_texture(spRegionAttachment *attachment) {
 }
 
 static Ref<Texture> spine_get_texture(spMeshAttachment *attachment) {
-
 	if (Ref<Texture> *ref = static_cast<Ref<Texture> *>(((spAtlasRegion *)attachment->rendererObject)->page->rendererObject))
 		return *ref;
 	return NULL;
@@ -189,7 +188,8 @@ void Spine::_animation_draw() {
 				a = attachment->color.a;
 				break;
 			}
-			case SP_ATTACHMENT_MESH: {
+			case SP_ATTACHMENT_MESH:
+			case SP_ATTACHMENT_LINKED_MESH: {
 
 				spMeshAttachment *attachment = (spMeshAttachment *)slot->attachment;
 				is_fx = strstr(attachment->path, fx_prefix) != NULL;
@@ -229,8 +229,7 @@ void Spine::_animation_draw() {
 				: fx_node->get_blend_mode()
 			);
 			additive = slot->data->additiveBlending;
-		}
-		 */
+		}*/
 
 		color.a = skeleton->color.a * slot->color.a * a;
 		color.r = skeleton->color.r * slot->color.r * r;
@@ -267,7 +266,8 @@ void Spine::_animation_draw() {
 					triangles_count = 0;
 					break;
 				}
-				case SP_ATTACHMENT_MESH: {
+				case SP_ATTACHMENT_MESH:
+				case SP_ATTACHMENT_LINKED_MESH: {
 
 					if (!debug_attachment_mesh)
 						continue;
@@ -935,7 +935,8 @@ Dictionary Spine::get_attachment(const String &p_slot_name, const String &p_atta
 			dict["vertices"] = vertices;
 		} break;
 
-		case SP_ATTACHMENT_MESH: {
+		case SP_ATTACHMENT_MESH:
+		case SP_ATTACHMENT_LINKED_MESH: {
 
 			spMeshAttachment *info = (spMeshAttachment *)attachment;
 			dict["type"] = "mesh";
@@ -1282,7 +1283,7 @@ Rect2 Spine::_edit_get_rect() const {
 			spRegionAttachment *attachment = (spRegionAttachment *)slot->attachment;
 			spRegionAttachment_computeWorldVertices(attachment, slot->bone, world_verts.ptrw(), 0, 2);
 			verticesCount = 8;
-		} else if (slot->attachment->type == SP_ATTACHMENT_MESH) {
+		} else if (slot->attachment->type == SP_ATTACHMENT_MESH || slot->attachment->type == SP_ATTACHMENT_LINKED_MESH) {
 			spMeshAttachment *mesh = (spMeshAttachment *)slot->attachment;
 			spVertexAttachment_computeWorldVertices(SUPER(mesh), slot, 0, mesh->super.worldVerticesLength, world_verts.ptrw(), 0, 2);
 			verticesCount = ((spVertexAttachment *)mesh)->worldVerticesLength;
