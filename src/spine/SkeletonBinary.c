@@ -745,6 +745,7 @@ spAttachment *spSkeletonBinary_readAttachment(spSkeletonBinary *self, _dataInput
 			region->width = readFloat(input) * self->scale;
 			region->height = readFloat(input) * self->scale;
 			readColor(input, &region->color.r, &region->color.g, &region->color.b, &region->color.a);
+			
 			spRegionAttachment_updateOffset(region);
 			spAttachmentLoader_configureAttachment(self->attachmentLoader, attachment);
 			if (freeName) FREE(name);
@@ -1015,10 +1016,10 @@ spSkeletonData *spSkeletonBinary_readSkeletonData(spSkeletonBinary *self, const 
 		spSlotData *slotData = spSlotData_create(i, slotName, boneData);
 		FREE(slotName);
 		readColor(input, &slotData->color.r, &slotData->color.g, &slotData->color.b, &slotData->color.a);
-		a = (int)&slotData->color.a;
-		r = (int)&slotData->color.r;
-		g = (int)&slotData->color.g;
-		b = (int)&slotData->color.b;
+		a = (int)slotData->color.a * 255;
+		r = (int)slotData->color.r * 255;
+		g = (int)slotData->color.g * 255;
+		b = (int)slotData->color.b * 255;
 		if (!(r == 0xff && g == 0xff && b == 0xff && a == 0xff)) {
 			slotData->darkColor = spColor_create();
 			spColor_setFromFloats(slotData->darkColor, r / 255.0f, g / 255.0f, b / 255.0f, 1);
